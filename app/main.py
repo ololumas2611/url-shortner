@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.api.routes.urls import urls_route
+from app.db.database import create_tables
 
 
 app = FastAPI(
@@ -11,5 +12,6 @@ app = FastAPI(
 def health():
     return {'status': 'OK'}
 
+create_tables()
 
 app.include_router(urls_route)
