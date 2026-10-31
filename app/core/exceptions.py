@@ -22,3 +22,9 @@ class ShortCodeGenerationError(AppError):
     status_code = 503
     code = "short_code_generation_failed"
     message = "Não foi possível gerar um código curto. Tenta novamente."
+
+
+class InvalidUrlError(AppError):
+    status_code = 422
+    code = "invalid_url"
+    message = "URL inválida. Usa um endereço completo começado por http:// ou https://."
