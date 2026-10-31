@@ -55,7 +55,6 @@ class UrlsService:
 
     def create(self, create_url : CreateUrl):
 
-        # Só uma URL válida pode gerar um short code.
         if not self.is_valid_url(create_url.original_url):
             raise InvalidUrlError()
         
@@ -64,12 +63,12 @@ class UrlsService:
 
 
     def get_by_short_code(self, code : str) -> Urls:
-        # 1. Encontrar o short code
+   
         short_code = self.short_codes.get_by_code(code)
+
         if short_code is None:
             raise ShortCodeNotFoundError()
 
-        # 2. Encontrar a URL a que pertence
         url = self.urls.get_by_id(short_code.url_id)
         if url is None:
             raise ShortCodeNotFoundError()
