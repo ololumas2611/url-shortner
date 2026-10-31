@@ -3,7 +3,8 @@ from fastapi.responses import RedirectResponse
 from app.schemas.url import CreateUrl
 from app.db.database import session_dp
 from app.services.url_service import UrlsService
-from app.api.routes.dependecy import get_url_service
+from app.services.redirect_service import RedirectService
+from app.api.routes.dependecy import get_url_service, get_redirect_service
 
 
 
@@ -33,8 +34,8 @@ def get_by_short_code(short_code : str, url_service : UrlsService = Depends(get_
 
 
 @urls_route.get("/{short_code}/redirect", status_code=status.HTTP_302_FOUND)
-def redirect_to_original(short_code : str, url_service : UrlsService = Depends(get_url_service)):
+def redirect_to_original(short_code : str, redirect_service : RedirectService = Depends(get_redirect_service)):
     # 302 Found: redirecionamento temporário — o browser não guarda em cache,
     # por isso cada clique volta a passar pela API.
-    url = url_service.get_by_short_code(short_code)
-    return RedirectResponse(url=url.original_url, status_code=status.HTTP_302_FOUND)
+    original_url = redirect_service.resolve(short_code)
+    return RedirectResponse(url=original_url, status_code=status.HTTP_302_FOUND)
