@@ -1,6 +1,7 @@
 from app.models.urls import Urls
 from app.schemas.url import CreateUrl
 from app.repositories.url_repo import UrlsRepository
+from app.repositories.short_code_repo import ShortCodesRepository
 
 from string import ascii_letters, digits
 
@@ -11,8 +12,9 @@ from app.core.exceptions import InvalidUrlError
 
 class UrlsService:
 
-    def __init__(self, urls_repo : UrlsRepository):
+    def __init__(self, urls_repo : UrlsRepository, short_codes_repo : ShortCodesRepository):
         self.urls = urls_repo
+        self.short_codes = short_codes_repo
 
     def gen_random_index(self, chars_length):
         # secrets usa o gerador criptográfico do sistema operativo (imprevisível),
@@ -56,6 +58,7 @@ class UrlsService:
         # Só uma URL válida pode gerar um short code.
         if not self.is_valid_url(create_url.original_url):
             raise InvalidUrlError()
+        
 
         short_code = self.urls.save(create_url.original_url, self.gen_short_code)
         return short_code.code

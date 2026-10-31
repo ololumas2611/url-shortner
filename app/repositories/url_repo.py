@@ -49,3 +49,5 @@ class UrlsRepository:
         except Exception:
             self.repo.rollback()                    # qualquer falha: nada fica gravado
             raise
+
+    # def get_by_short
