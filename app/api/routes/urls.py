@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import RedirectResponse
 from app.schemas.url import CreateUrl
 from app.db.database import session_dp
 from app.services.url_service import UrlsService
 from app.services.redirect_service import RedirectService
-from app.api.routes.dependecy import get_url_service, get_redirect_service
+from app.services.click_service import ClicksService
+from app.api.routes.dependecy import get_url_service, get_redirect_service, get_clicks_service
 
 
 
@@ -34,8 +35,21 @@ def get_by_short_code(short_code : str, url_service : UrlsService = Depends(get_
 
 
 @urls_route.get("/{short_code}/redirect", status_code=status.HTTP_302_FOUND)
-def redirect_to_original(short_code : str, redirect_service : RedirectService = Depends(get_redirect_service)):
+def redirect_to_original(short_code : str, request : Request, redirect_service : RedirectService = Depends(get_redirect_service)):
     # 302 Found: redirecionamento temporário — o browser não guarda em cache,
     # por isso cada clique volta a passar pela API.
-    original_url = redirect_service.resolve(short_code)
+    original_url = redirect_service.resolve(
+        short_code,
+        ip=request.client.host if request.client else None,
+        user_agent=request.headers.get('user-agent'),
+        referer=request.headers.get('referer'),
+    )
     return RedirectResponse(url=original_url, status_code=status.HTTP_302_FOUND)
+
+
+@urls_route.get("/{short_code}/clicks")
+def count_clicks(short_code : str, clicks_service : ClicksService = Depends(get_clicks_service)):
+    return {
+        'short_code': short_code,
+        'total_clicks': clicks_service.count(short_code),
+    }

@@ -1,4 +1,5 @@
 from app.models.urls import Urls
+from app.models.short_codes import ShortCodes
 from app.schemas.url import CreateUrl
 from app.repositories.url_repo import UrlsRepository
 from app.repositories.short_code_repo import ShortCodesRepository
@@ -62,15 +63,23 @@ class UrlsService:
         return short_code.code
 
 
-    def get_by_short_code(self, code : str) -> Urls:
-   
+    def get_short_code(self, code : str) -> ShortCodes:
         short_code = self.short_codes.get_by_code(code)
 
         if short_code is None:
             raise ShortCodeNotFoundError()
 
+        return short_code
+
+
+    def get_url_of(self, short_code : ShortCodes) -> Urls:
         url = self.urls.get_by_id(short_code.url_id)
+
         if url is None:
             raise ShortCodeNotFoundError()
 
         return url
+
+
+    def get_by_short_code(self, code : str) -> Urls:
+        return self.get_url_of(self.get_short_code(code))
