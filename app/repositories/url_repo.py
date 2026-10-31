@@ -5,6 +5,7 @@ from sqlmodel import Session
 
 from app.models.urls import Urls
 from app.models.short_codes import ShortCodes
+from app.core.exceptions import ShortCodeGenerationError
 
 
 class UrlsRepository:
@@ -39,9 +40,7 @@ class UrlsRepository:
                     short_code = None
                     continue                        # ROLLBACK TO SAVEPOINT -> a url mantém-se
             else:
-                raise RuntimeError(
-                    f"Não foi possível gerar um código único após {max_attempts} tentativas"
-                )
+                raise ShortCodeGenerationError()
 
             self.repo.commit()                      # URL + código gravados juntos
             self.repo.refresh(short_code)
