@@ -40,7 +40,7 @@ class UrlsService:
 
             except Exception as e:
                 print("Houve um erro ao gerar ", str(e))
-                break
+                raise
                 # ver uma forma melhor de tratar isso.
 
 
