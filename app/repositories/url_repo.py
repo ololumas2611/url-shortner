@@ -1,4 +1,5 @@
 from typing import Callable
+from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
@@ -50,4 +51,6 @@ class UrlsRepository:
             self.repo.rollback()                    # qualquer falha: nada fica gravado
             raise
 
-    # def get_by_short
+    def get_by_id(self, url_id: UUID) -> Urls | None:
+        # Procura pela chave primária; devolve None se não existir.
+        return self.repo.get(Urls, url_id)

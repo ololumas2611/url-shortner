@@ -28,3 +28,9 @@ class InvalidUrlError(AppError):
     status_code = 422
     code = "invalid_url"
     message = "URL inválida. Usa um endereço completo começado por http:// ou https://."
+
+
+class ShortCodeNotFoundError(AppError):
+    status_code = 404
+    code = "short_code_not_found"
+    message = "Não existe nenhuma URL para este código curto."
