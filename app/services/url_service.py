@@ -8,7 +8,7 @@ from string import ascii_letters, digits
 import secrets
 from urllib.parse import urlsplit
 
-from app.core.exceptions import InvalidUrlError
+from app.core.exceptions import InvalidUrlError, ShortCodeNotFoundError
 
 class UrlsService:
 
@@ -59,6 +59,19 @@ class UrlsService:
         if not self.is_valid_url(create_url.original_url):
             raise InvalidUrlError()
         
-
         short_code = self.urls.save(create_url.original_url, self.gen_short_code)
         return short_code.code
+
+
+    def get_by_short_code(self, code : str) -> Urls:
+        # 1. Encontrar o short code
+        short_code = self.short_codes.get_by_code(code)
+        if short_code is None:
+            raise ShortCodeNotFoundError()
+
+        # 2. Encontrar a URL a que pertence
+        url = self.urls.get_by_id(short_code.url_id)
+        if url is None:
+            raise ShortCodeNotFoundError()
+
+        return url

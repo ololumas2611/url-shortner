@@ -20,3 +20,12 @@ def create(create_url : CreateUrl, url_service : UrlsService = Depends(get_url_s
         'original_url': create_url.original_url,
         'short_code': short_code,
     }
+
+
+@urls_route.get("/{short_code}")
+def get_by_short_code(short_code : str, url_service : UrlsService = Depends(get_url_service)):
+    url = url_service.get_by_short_code(short_code)
+    return {
+        'original_url': url.original_url,
+        'short_code': short_code,
+    }
